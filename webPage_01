@@ -1,0 +1,49 @@
+package webPage;
+
+import com.sun.net.httpserver.*;
+import java.io.*;
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+public class webPage_01 {
+
+	public static void main(String[] args) throws IOException {
+		 HttpServer server = HttpServer.create(new InetSocketAddress(8090), 0);
+
+	        // ✅ 기본 주소: http://localhost:8080/
+	        server.createContext("/", (exchange) -> {
+	        	Path path = Paths.get("D:\\JAVA\\First\\src\\webPage\\helloConsole.html"); // 같은 폴더의 HTML 파일 읽기
+	            byte[] data = Files.readAllBytes(path);
+	            exchange.getResponseHeaders().set("Content-Type", "text/html; charset=utf-8");
+	            exchange.sendResponseHeaders(200, data.length);
+	            OutputStream os = exchange.getResponseBody();
+	            os.write(data);
+	            os.close();
+	        });
+
+	        // ✅ /api/hello 요청 처리
+	        server.createContext("/api/hello", (exchange) -> {
+	            String msg = "안녕, 브라우저야 👋 나는 Java 서버야!";
+	            send(exchange, msg);
+	        });
+
+	        server.setExecutor(null);
+	        server.start();
+	        System.out.println("✅ 서버 실행 중 → http://localhost:8090");
+	    }
+
+	    // ✅ 공통 응답 함수 (중복 제거용)
+	    private static void send(HttpExchange ex, String msg) throws IOException {
+	        byte[] bytes = msg.getBytes(StandardCharsets.UTF_8);
+	        ex.getResponseHeaders().set("Content-Type", "text/html; charset=utf-8");
+	        ex.getResponseHeaders().set("Access-Control-Allow-Origin", "*"); // CORS 허용
+	        ex.sendResponseHeaders(200, bytes.length);
+	        try (OutputStream os = ex.getResponseBody()) {
+	            os.write(bytes);
+	        }
+	    }
+	}
+
