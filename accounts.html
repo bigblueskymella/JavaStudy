@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>💳 계좌 목록</title>
+</head>
+<body>
+<h2>💳 한세은행 계좌 조회</h2>
+<button onclick="loadAccounts()">DB 계좌 불러오기</button>
+<ul id="list"></ul>
+
+<script>
+async function loadAccounts() {
+  const res = await fetch("http://localhost:8080/api/accounts");
+  const data = await res.json();
+
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+  data.forEach(acc => {
+    const li = document.createElement("li");
+    // 아이디: ${acc.id} - 예금주: 🛑내용추가해보기 
+    li.textContent = `예금주: ${acc.owner} - 잔액: ${acc.balance}원`;
+    list.appendChild(li);
+  });
+}
+</script>
+
+<h3>✏️ 수정 및 삭제</h3>
+<input id="id" type="number" placeholder="ID 입력" />
+<input id="balance" type="number" placeholder="새 잔액 입력" />
+<button onclick="updateAccount()">수정</button>
+<button onclick="deleteAccount()">삭제</button>
+
+<script>
+async function updateAccount() {
+  const id = document.getElementById("id").value;
+  const balance = document.getElementById("balance").value;
+  if (!id || !balance) return alert("ID와 잔액을 입력하세요!");
+  const res = await fetch(`http://localhost:8080/api/update?id=${id}&balance=${balance}`);
+  alert(await res.text());
+}
+
+async function deleteAccount() {
+  const id = document.getElementById("id").value;
+  if (!id) return alert("ID를 입력하세요!");
+  // const res = await fetch(`http://localhost:8080/api/delete?id=${id}`);
+  //윗 줄을 아래 줄로 변경하기(POST 방식)
+  const res = await fetch(`http://localhost:8080/api/delete?id=${id}`, {
+    method: 'POST',  
+    headers: { 'Content-Type': 'application/json'},
+    body: `id=${id}`
+  });
+  alert(await res.text());
+}
+</script>
+</body>
+</html>
