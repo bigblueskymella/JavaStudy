@@ -1,0 +1,103 @@
+package webPage_06;
+
+import com.sun.net.httpserver.*;
+import java.io.*;
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+public class webPage_03 {
+
+    // -----------------------------
+    // ✔ 학생이 직접 타이핑할 부분
+    // -----------------------------
+    
+    static List<Student> students = new ArrayList<>();
+    static {
+        students.add(new Student(1, "김민수"));
+        students.add(new Student(2, "박서연"));
+        students.add(new Student(3, "이준호"));
+        students.add(new Student(4, "최예린"));
+    }
+
+
+    public static void main(String[] args) throws IOException {
+
+        // 서버 실행
+        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+
+
+        // ---------------------------
+        // ✔ HTML 화면 보내기
+        // ---------------------------
+        server.createContext("/", (ex) -> {
+            Path path = Paths.get("D:\\JAVA\\First\\src\\webPage_06\\helloStudents.html");
+            byte[] data = Files.readAllBytes(path);
+
+            ex.getResponseHeaders().set("Content-Type", "text/html; charset=utf-8");
+            ex.sendResponseHeaders(200, data.length);
+            ex.getResponseBody().write(data);
+            ex.close();
+        });
+
+
+        // ---------------------------
+        // ✔ 학생 목록 API
+        // 브라우저가 GET /api/students 요청하면 실행됨
+        // ---------------------------
+        server.createContext("/api/students", (ex) -> {
+
+            StringBuilder json = new StringBuilder("[");
+            for (int i = 0; i < students.size(); i++) {
+                Student s = students.get(i);
+                json.append(String.format(
+                    "{\"id\":%d,\"name\":\"%s\",\"attended\":%b}",
+                    s.id, s.name, s.attended
+                ));
+                if (i < students.size() - 1) json.append(",");
+            }
+            json.append("]");
+
+            send(ex, json.toString(), "application/json");
+        });
+
+
+        // ---------------------------
+        // ✔ 출석 체크 API ( 타이핑하면 좋은 부분)
+        //     예) /api/attend?id=3
+        // ---------------------------
+        server.createContext("/api/attend", (ex) -> {
+
+            String query = ex.getRequestURI().getQuery(); // id=3
+            if (query != null && query.startsWith("id=")) {
+                int id = Integer.parseInt(query.substring(3));
+                for (Student s : students) {
+                    if (s.id == id) {
+                        s.attended = true;
+                    }
+                }
+            }
+            send(ex, "OK", "text/plain");
+        });
+
+        server.setExecutor(null);
+        server.start();
+        System.out.println("🚀 출석부 서버 실행됨 http://localhost:8080");
+    }
+
+    // ---------------------------
+    // ✔ 응답 보내기
+    // ---------------------------
+    private static void send(HttpExchange ex, String msg, String type) throws IOException {
+        byte[] bytes = msg.getBytes(StandardCharsets.UTF_8);
+        ex.getResponseHeaders().set("Content-Type", type + "; charset=utf-8");
+        ex.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+        ex.sendResponseHeaders(200, bytes.length);
+        ex.getResponseBody().write(bytes);
+        ex.close();
+    }
+}
