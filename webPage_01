@@ -1,16 +1,22 @@
 package webPage_06;
+
 import com.sun.net.httpserver.*;
 import java.io.*;
 import java.net.InetSocketAddress;
-import java.nio.file.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+public class webPage_02 {
 
-public class webPage_01 {
-	public static void main(String[] args) throws IOException{
-		HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
-
+    public static void main(String[] args) throws IOException {
+        // 1) 서버 생성 → 포트 번호 채우기
+        HttpServer server = HttpServer.create(new InetSocketAddress(______), 0);
+        // 2) "/" 요청 → HTML 파일 보내기
         server.createContext("/", (exchange) -> {
-            Path path = Paths.get("D:\\JAVA\\First\\src\\webPage_06\\helloConsole.html"); //절대 경로 HTML 파일 읽기
+            Path path = Paths.get("D:\\JAVA\\First\\src\\webPage_06\\__________.html");
             byte[] data = Files.readAllBytes(path);
+            // 브라우저에게 "HTML이다"라고 알려주는 부분
             exchange.getResponseHeaders().set("Content-Type", "text/html; charset=utf-8");
             exchange.sendResponseHeaders(200, data.length);
             OutputStream os = exchange.getResponseBody();
@@ -18,7 +24,25 @@ public class webPage_01 {
             os.close();
         });
 
+        // 3) "/api/hello" 요청 처리 → 문자열 응답
+        server.createContext("/api/hello", (exchange) -> {
+            //서버가 보내줄 메시지
+            String msg = "__________";
+            send(exchange, msg);
+        });
+        server.setExecutor(null);
         server.start();
-        System.out.println("🌍 HTML 서버 실행 중: http://localhost:8080");
-	}
+        System.out.println("서버 실행 중 → http://localhost:______");
+    }
+
+    // 공통 응답 함수 (수정 X)
+    private static void send(HttpExchange ex, String msg) throws IOException {
+        byte[] bytes = msg.getBytes(StandardCharsets.UTF_8);
+        ex.getResponseHeaders().set("Content-Type", "text/html; charset=utf-8");
+        ex.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+        ex.sendResponseHeaders(200, bytes.length);
+        try (OutputStream os = ex.getResponseBody()) {
+            os.write(bytes);
+        }
+    }
 }
