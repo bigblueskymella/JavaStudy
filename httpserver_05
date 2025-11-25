@@ -3,31 +3,35 @@ package httpserver_05;
 import com.sun.net.httpserver.*;
 import java.io.*;
 import java.net.InetSocketAddress;
-import java.util.Date;
 
 public class httpserver {
     public static void main(String[] args) throws IOException {
 
-        // 서버 생성 (포트번호 8091~ + N)
-        HttpServer server = HttpServer.create(new InetSocketAddress(809x), 0);
+        // 1) 서버 생성 (포트 번호 채우기)
+        HttpServer server = HttpServer.create(new InetSocketAddress(______), 0);
 
-        // "/"로 요청이 들어왔을 때 실행할 코드
+        // 2) 경로 "/" 요청 처리
         server.createContext("/", (exchange) -> {
-            String msg =
-                    "<h1>안녕하세요 👋 한세고 서버입니다!</h1>" +
-                    "<a href='about'>/about 가기</a><br>" +
-                    "<a href='time'>/time 가기</a>";
+
+            // 학생이 만들어야 할 메시지(HTML)
+            String msg = "<h1>안녕하세요 👋 서버입니다!</h1>" +
+                         "<p>제 이름은 <b>" + ________ + "</b> 입니다!</p>";
 
             exchange.getResponseHeaders().set("Content-Type", "text/html; charset=utf-8");
-            exchange.sendResponseHeaders(200, msg.getBytes().length);
+            
+            // 응답 길이 계산 → 빈칸 채우기
+            exchange.sendResponseHeaders(200, msg.getBytes().________);
 
             OutputStream os = exchange.getResponseBody();
-            os.write(msg.getBytes());
+
+            // 응답 전송 → 빈칸
+            os.________(msg.getBytes());
+
             os.close();
         });
 
-        // 서버 시작
+        // 3) 서버 시작
         server.start();
-        System.out.println("🚀 서버 실행 중: http://localhost:809x");
+        System.out.println("🚀 서버 실행 중: http://localhost:______");
     }
 }
