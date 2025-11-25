@@ -1,41 +1,33 @@
 package httpserver_05;
+
 import com.sun.net.httpserver.*;
 import java.io.*;
 import java.net.InetSocketAddress;
-import java.util.Date; //✅미션 2 추가
+import java.util.Date;
 
 public class httpserver {
-	public static void main(String[] args) throws IOException {
-        // 1️ 서버 생성 (포트번호 8080 지정 번호 다르게 8081~)
-        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+    public static void main(String[] args) throws IOException {
 
-        // 2️ 요청 경로("/")와 실행할 코드(핸들러) 연결
-		//exchange.getResponseBody() 브라우저로 보낼 내용
-        //sendResponseHeaders(200, ...) “정상 응답 OK” 코드
-		// 브라우저에 보낼 실제 응답 데이터를 담는 통로(OutputStream)를 연다
- 		// 준비한 msg(HTML 문자열)를 바이트(byte) 형태로 변환해서 브라우저로 전송한다
-    	// 데이터 전송이 끝났으니 통로를 닫는다 (메모리 낭비 방지)
+        // 서버 생성 (포트번호 8091~ + N)
+        HttpServer server = HttpServer.create(new InetSocketAddress(809x), 0);
 
+        // "/"로 요청이 들어왔을 때 실행할 코드
         server.createContext("/", (exchange) -> {
-            String msg = "<h1>안녕하세요 👋 한세고 서버입니다!</h1>"
-            		+"<a href='about'>/about가기</a>"
-            		+"<a href='time'>/time가기</a>";            
+            String msg =
+                    "<h1>안녕하세요 👋 한세고 서버입니다!</h1>" +
+                    "<a href='about'>/about 가기</a><br>" +
+                    "<a href='time'>/time 가기</a>";
+
             exchange.getResponseHeaders().set("Content-Type", "text/html; charset=utf-8");
             exchange.sendResponseHeaders(200, msg.getBytes().length);
-            
+
             OutputStream os = exchange.getResponseBody();
             os.write(msg.getBytes());
             os.close();
         });
 
-//        getResponseBody()	“브라우저로 가는 파이프(수도관)를 연다” 🚰
-//        os.write(...)	“파이프에 물(데이터)을 흘려보낸다” 💧
-//        os.close()	“파이프를 잠근다(전송 완료)” 🔒
-        
-
-        
-        // 3️ 서버 시작
+        // 서버 시작
         server.start();
-        System.out.println("🚀 서버 실행 중: http://localhost:8081");
+        System.out.println("🚀 서버 실행 중: http://localhost:809x");
     }
 }
