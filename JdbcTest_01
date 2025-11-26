@@ -3,7 +3,7 @@ import java.sql.*;  // JDBC 관련 패키지 임포트
 public class JdbcTest_01 {
 	public static void main(String[] args) {
 		 // 1️ MySQL 연결 정보
-        String url = "jdbc:mysql://localhost:3306/hansei_bank?serverTimezone=Asia/Seoul&useSSL=false&characterEncoding=utf8";
+        String url = "jdbc:mysql://localhost:____/______________?serverTimezone=Asia/Seoul&useSSL=false&characterEncoding=utf8";
         String user = "____";  // 계정
         String pass = "____";  // ✅ 설치 시 입력했던 비번
 
