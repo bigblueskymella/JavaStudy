@@ -4,22 +4,22 @@ public class JdbcTest_01 {
 	public static void main(String[] args) {
 		 // 1️ MySQL 연결 정보
         String url = "jdbc:mysql://localhost:3306/hansei_bank?serverTimezone=Asia/Seoul&useSSL=false&characterEncoding=utf8";
-        String user = "root";  // 또는 student 계정
-        String pass = "1234";  // ✅ 설치 시 입력했던 비번
+        String user = "____";  // 계정
+        String pass = "____";  // ✅ 설치 시 입력했던 비번
 
         // 2️ 연결 시도
         try (Connection conn = DriverManager.getConnection(url, user, pass)) {
             System.out.println("✅ MySQL 연결 성공!");
           
-            // 쿼리 실행
-            String sql = "SELECT owner, balance FROM account ORDER BY id";
+            // 쿼리 실행: 실행할 SQL 문 작성하기 (조회)
+            String sql = "SELECT ____, _______ FROM account ORDER BY id";
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
 
             // 3️ DB에서 꺼낸 데이터 한 줄씩 출력
             while (rs.next()) {
-                String owner = rs.getString("owner");
-                int balance = rs.getInt("balance");
+                String owner = rs.getString("____");
+                int balance = rs.getInt("_______");
                 System.out.println(owner + "님의 잔액: " + balance + "원");
             }
             
