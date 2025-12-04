@@ -1,0 +1,50 @@
+<html><head><meta charset='UTF-8'><title>출석부</title>
+                <style>
+                    body { font-family: Arial; padding: 20px; }
+                    button { margin: 5px; padding: 10px; }
+                    #list { margin-top:20px; }
+                </style>
+                </head>
+                <body>
+                <h2>📚 학생 출석부</h2>
+
+                <!-- 버튼을 누르면 아래 JS 함수 실행 -->
+                <button onclick='loadStudents()'>전체 학생 보기</button>
+                <button onclick='resetAttend()'>출석 초기화</button>
+
+                <!-- 여기에 학생 목록이 표시됨 -->
+                <div id='list'></div>
+
+                <script>
+                  /*  loadStudents() - 서버의 /api/students 로 요청 보내기 (GET 요청)
+                  - 서버에서 받은 JSON(학생 목록)으로 화면에 리스트 만들기*/
+                async function loadStudents() {
+                    const res = await fetch('/api/students'); // 1) 서버에 요청 보내기 → 응답 받기
+                    const data = await res.json(); // 2) JSON 형태로 변환 (문자 → JS 객체)
+
+                    let html = '<h3>학생 목록</h3><ul>'; // 3) HTML 만들기
+                    data.forEach(s => { //배열의 각 요소에 대해 지정된 함수(콜백 함수)를 한 번씩 실행 for 반복문보다 간결
+                        html += `<li>
+                            ${s.id}. ${s.name} 
+                            - 상태: ${s.attended ? "🟢출석" : "⚪미출석"} 
+                            <button onclick="attend(${s.id})">${s.attended ? "미출석" : "출석"}</button>
+                        </li>`;
+                    });
+                    html += '</ul>';
+                    document.getElementById('list').innerHTML = html; // 4) 만들어진 HTML을 화면에 삽입
+                }
+
+                /* 🟢 attend(id)    - 특정 학생을 출석 처리시키는 함수
+                 - /api/attend?id=?? 로 서버에 요청 보냄*/
+                async function attend(id) {
+                    await fetch('/api/attend?id=' + id); // 출석 체크 요청 보내기
+                    loadStudents(); // 출석 후 화면 다시 갱신
+                }
+
+                async function resetAttend() {
+                    await fetch('/api/reset');
+                    loadStudents();
+                }
+                </script>
+
+                </body></html>
