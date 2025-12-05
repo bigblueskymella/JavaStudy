@@ -1,5 +1,4 @@
 package webPage_06;
-
 import com.sun.net.httpserver.*;
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -28,7 +27,7 @@ public class webPage_03 {
     public static void main(String[] args) throws IOException {
 
         // 서버 실행
-        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+        HttpServer server = HttpServer.create(new InetSocketAddress(____), 0);
 
 
         // ---------------------------
@@ -86,7 +85,7 @@ public class webPage_03 {
 
         server.setExecutor(null);
         server.start();
-        System.out.println("🚀 출석부 서버 실행됨 http://localhost:8080");
+        System.out.println("🚀 출석부 서버 실행됨 http://localhost:____");
     }
 
     // ---------------------------
