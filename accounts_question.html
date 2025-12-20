@@ -7,21 +7,30 @@
 </head>
 
 <body>
+  <div class="section">
   <h2>💳 한세은행 계좌 조회</h2>
   <button onclick="loadAccounts()">DB 계좌 불러오기</button>
   <ul id="list"></ul>
+  </div>
 
+  <div class="section">
   <h3>✏️ 수정 및 삭제</h3>
+  <div class="row">
   <input id="id" type="number" placeholder="ID 입력" />
   <input id="balance" type="number" placeholder="새 잔액 입력" />
+  </div>
   <button onclick="updateAccount()">수정</button>
   <button onclick="deleteAccount()">삭제</button>
-  <br><br>
+  </div>    
 
+  <div class="section">
   <h3>🧁 계좌 추가하기</h3>
+  <div class="row">
   <input id="owner" placeholder="이름">
   <input id="balance2" placeholder="초기 잔액" type="number">
+  </div>
   <button onclick="addAccount()"> 계좌 추가</button>
+  </div>
 
   <script>
     async function loadAccounts() {
