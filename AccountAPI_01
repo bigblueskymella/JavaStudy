@@ -1,0 +1,144 @@
+package old_http; // 패키지명
+import com.sun.net.httpserver.*;
+import java.io.*;                 // 입출력
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.sql.*;                // JDBC
+import org.json.JSONArray;
+import org.json.JSONObject;
+import java.nio.file.*;           // HTML 파일 읽기
+import java.util.Map;
+import java.util.HashMap;
+
+public class AccountAPI_01 {
+	// ✅조회(SELECT), ✅수정(UPDATE), ✅삭제(DELETE)	// ❌등록 없는 버전 (교육용)
+	public static void main(String[] args) throws IOException {
+		// 🟦 1. HTTP 서버 생성 (포트 번호)
+		HttpServer server =	HttpServer.create(new InetSocketAddress(__________), 0);
+
+		// 🟦 2. 메인 페이지 (HTML 반환)
+		server.createContext("/", exchange -> {
+			Path path =	Paths.get("________________________________________"); // 🛑 HTML 파일 경로
+			byte[] bytes = Files.readAllBytes(path);
+			exchange.getResponseHeaders().set("Content-Type", "text/html; charset=utf-8");
+			exchange.sendResponseHeaders(__________, bytes.length);
+			OutputStream os = exchange.getResponseBody();
+			os.write(bytes);
+			os.close();
+			exchange.sendResponseHeaders(404, 0);
+		});
+
+		// 🟦 3. API 라우팅: 각 핸들러 실행
+		server.createContext("/api/accounts", new AccountHandler());
+		server.createContext("/api/update",   new UpdateHandler());
+		server.createContext("/api/delete",   new DeleteHandler());
+		server.setExecutor(null);
+		server.start();
+		System.out.println("http://localhost:8080 실행 중");
+	}
+
+	// 1️⃣ 계좌 조회 (GET /api/accounts)
+	static class AccountHandler implements HttpHandler {
+		public void handle(HttpExchange exchange) throws IOException {
+			JSONArray list = new JSONArray();
+
+			try (Connection conn = DriverManager.getConnection("________________________________________", "__________", "__________");
+  				Statement stmt = conn.createStatement();
+	  			ResultSet rs = stmt.executeQuery("_______________________________")) {
+				while (rs.next()) {
+					JSONObject obj = new JSONObject();
+					obj.put("id",      rs.getInt("______"));
+					obj.put("owner",   rs.getString("______"));
+					obj.put("balance", rs.getInt("______"));
+					list.put(obj);
+				}
+
+			} catch (SQLException e) {
+				System.out.println("❌ DB 오류: " + e.getMessage());
+			}
+
+			byte[] bytes = list.toString(2).getBytes(StandardCharsets.UTF_8);
+			exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
+			exchange.sendResponseHeaders(__________, bytes.length);
+			try (OutputStream os = exchange.getResponseBody()) {
+				os.write(bytes);
+			}
+		}
+	}
+
+	// 2️⃣ 잔액 수정 (POST /api/update)
+	static class UpdateHandler implements HttpHandler {
+		public void handle(HttpExchange exchange) throws IOException {
+			// 🛑 HTTP 메서드 체크
+			if (!"__________".equalsIgnoreCase(exchange.getRequestMethod())) {
+				sendText(exchange, "❌ POST 요청만 허용됩니다");
+				return;
+			}
+
+			// 🟦 요청 Body 읽기
+			String body =	new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+			Map<String, String> map = parseQuery(body);
+			int id, balance;
+			try {
+				id      = Integer.parseInt(map.get("______"));
+				balance = Integer.parseInt(map.get("______"));
+			} catch (Exception e) {
+				sendText(exchange, "❌ id와 balance는 숫자여야 합니다");
+				return;
+			}
+
+			try (Connection conn = DriverManager.getConnection("________________________________________",
+								"__________", "__________");
+  				PreparedStatement ps = conn.prepareStatement("________________________________________")) {
+				ps.setInt(1, balance);
+				ps.setInt(2, id);
+				int rows = ps.executeUpdate();
+				sendText(exchange, rows > 0	? "✅ 수정 완료!"	: "❌ 해당 ID 없음");
+			} catch (SQLException e) {
+				sendText(exchange, "❌ DB 오류: " + e.getMessage());
+			}
+		}
+	}
+
+	// 3️⃣ 계좌 삭제 (GET /api/delete?id=?)
+	static class DeleteHandler implements HttpHandler {
+		public void handle(HttpExchange exchange) throws IOException {
+			String query = exchange.getRequestURI().getQuery();
+			Map<String, String> map =	parseQuery(query);
+			int id = Integer.parseInt(map.get("______"));
+			try (Connection conn = DriverManager.getConnection("________________________________________", "__________", "__________");
+				PreparedStatement ps = conn.prepareStatement("________________________________________")) {
+				ps.setInt(1, id);
+				int rows = ps.executeUpdate();
+
+				sendText(exchange, rows > 0	? "🗑️ 삭제 완료!"	: "❌ 해당 ID 없음");
+
+			} catch (SQLException e) {
+				sendText(exchange, "❌ DB 오류: " + e.getMessage());
+			}
+		}
+	}
+
+	// ✅ ↓↓↓ 공용 유틸 (쿼리 파싱)
+	private static Map<String, String> parseQuery(String query) {
+		Map<String, String> map = new HashMap<>();
+		if (query == null)
+			return map;
+		for (String pair : query.split("&")) {
+			String[] kv = pair.split("=");
+			if (kv.length == 2)
+				map.put(kv[0], kv[1]);
+		}
+		return map;
+	}
+
+	// ✅ ↓↓↓ 공용 유틸 (텍스트 응답)
+	private static void sendText(HttpExchange ex,	String msg) throws IOException {
+		byte[] bytes = msg.getBytes(StandardCharsets.UTF_8);
+		ex.getResponseHeaders().set("Content-Type", "text/plain; charset=utf-8");
+		ex.sendResponseHeaders(200, bytes.length);
+		try (OutputStream os = ex.getResponseBody()) {
+			os.write(bytes);
+		}
+	}
+}
