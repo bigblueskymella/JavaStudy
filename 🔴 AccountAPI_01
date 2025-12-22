@@ -18,14 +18,16 @@ public class AccountAPI_01 {
 
 		// 🟦 2. 메인 페이지 (HTML 반환)
 		server.createContext("/", exchange -> {
-			Path path =	Paths.get("________________________________________"); // 🛑 HTML 파일 경로
-			byte[] bytes = Files.readAllBytes(path);
-			exchange.getResponseHeaders().set("Content-Type", "text/html; charset=utf-8");
-			exchange.sendResponseHeaders(__________, bytes.length);
-			OutputStream os = exchange.getResponseBody();
-			os.write(bytes);
-			os.close();
+			try{Path path =	Paths.get("________________________________________"); // 🛑 HTML 파일 경로
+				byte[] bytes = Files.readAllBytes(path);
+				exchange.getResponseHeaders().set("Content-Type", "text/html; charset=utf-8");
+				exchange.sendResponseHeaders(__________, bytes.length);
+				OutputStream os = exchange.getResponseBody();
+				os.write(bytes);
+				os.close();
+			} catch (IOException e){
 			exchange.sendResponseHeaders(404, 0);
+			}
 		});
 
 		// 🟦 3. API 라우팅: 각 핸들러 실행
