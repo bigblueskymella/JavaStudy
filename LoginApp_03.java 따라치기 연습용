@@ -1,0 +1,156 @@
+package login;
+
+import com.sun.net.httpserver.*;
+import java.io.*;
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.sql.*;
+
+public class LoginApp_03 {
+
+    // ===== DB 연결 정보 =====
+    static final String URL  = "___________________________________________";
+    static final String USER = "________";
+    static final String PASS = "________";
+
+    public static void main(String[] args) throws Exception {
+
+        HttpServer server = HttpServer.create(
+                new InetSocketAddress(________), ________
+        );
+
+        server.createContext("____", LoginApp_03::______________);
+        server.createContext("___________", LoginApp_03::________);
+        server.createContext("____________", LoginApp_03::_______);
+        server.createContext("______________", LoginApp_03::_________);
+
+        server.start();
+        System.out.println("🚀 로그인 웹서버 실행됨: http://localhost:8080");
+    }
+
+    // ---------------------------------------
+    // index.html 출력
+    // ---------------------------------------
+    private static void serveIndex(HttpExchange ex) throws IOException {
+        File file = new File(
+            "________________________________________________________"
+        );
+
+        String html = _______________________________________________;
+        ex.getResponseHeaders().set("Content-Type", "__________________________");
+        ex.sendResponseHeaders(____, ____________________________);
+        try (OutputStream os = ________________________________) {
+            ________________________________;
+        }
+    }
+
+    // ---------------------------------------
+    // 로그인 처리
+    // /api/login?id=aaa&pw=111
+    // ---------------------------------------
+    private static void login(HttpExchange ex) throws IOException {
+
+        String id = ___________________________;
+        String pw = ___________________________;
+
+        String sql = "____________________________________________________";
+
+        try (
+            Connection conn = ______________________________________;
+            PreparedStatement pstmt = ______________________________
+        ) {
+
+            pstmt.setString(___, ________);
+            pstmt.setString(___, ________);
+
+            ResultSet rs = ___________________________;
+
+            if (rs.next()) {
+                // 로그인 성공
+                _________________________________;
+            } else {
+                _________________________________;
+            }
+
+        } catch (SQLException e) {
+            _________________________________;
+        }
+    }
+
+    // ---------------------------------------
+    // 로그아웃 처리
+    // ---------------------------------------
+    private static void logout(HttpExchange ex) throws IOException {
+
+        // 쿠키 삭제 (Max-Age=0)
+        // ________________________________________________;
+
+        _________________________________;
+    }
+
+    // ---------------------------------------
+    // 회원가입 처리
+    // ---------------------------------------
+    private static void register(HttpExchange ex) throws IOException {
+
+        String id = ___________________________;
+        String pw = ___________________________;
+
+        if (_______________________________) {
+            _________________________________;
+            return;
+        }
+
+        String sql = "____________________________________________________";
+
+        try (
+            Connection conn = ______________________________________;
+            PreparedStatement pstmt = ______________________________
+        ) {
+
+            pstmt.setString(___, ________);
+            pstmt.setString(___, ________);
+
+            _________________________________;
+
+            _________________________________;
+
+        } catch (SQLException e) {
+
+            if (_________________________________)
+                _________________________________;
+            else
+                _________________________________;
+        }
+    }
+
+    // ---------------------------------------
+    // 공통 파라미터 추출 함수
+    // ex) "id=abc&pw=1234"
+    // ---------------------------------------
+    private static String param(HttpExchange ex, String key) {
+
+        String q = _______________________________________________;
+        if (___________) return "";
+
+        for (String s : ___________________________) {
+            String[] kv = ___________________________;
+            if (______________________________________)
+                return ____________________;
+        }
+        return "";
+    }
+
+    // ---------------------------------------
+    // 공통 응답 출력 함수
+    // ---------------------------------------
+    private static void send(HttpExchange ex, String msg) throws IOException {
+
+        ex.getResponseHeaders().set("Content-Type", "__________________________");
+        byte[] bytes = ___________________________;
+        ex.sendResponseHeaders(____, ____________________);
+        _________________________________;
+        _________________________________;
+    }
+}
