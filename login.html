@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>🔐 한세 로그인 시스템</title>
+<style>
+body {
+  font-family: 'Pretendard', sans-serif;
+  background: #f3f4f6;
+  text-align: center;
+  padding: 40px;
+}
+.card {
+  background: white;
+  max-width: 400px;
+  margin: auto;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+input {
+  width: 90%;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+button {
+  width: 90%;
+  padding: 10px;
+  margin-top: 10px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+}
+button:hover { background: #1e40af; }
+#status { margin-top: 15px; font-weight: bold; color: #2563eb; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>🔐 한세 로그인 시스템</h2>
+
+  <input id="id" placeholder="아이디">
+  <input id="pw" type="password" placeholder="비밀번호">
+  <input id="name" placeholder="이름 (회원가입 시만)">
+
+  <button onclick="register()">회원가입</button>
+  <button onclick="login()">로그인</button>
+  <button onclick="logout()">로그아웃</button>
+
+  <p id="status">🕊️ 상태: 로그인되지 않음</p>
+</div>
+
+<script>
+const api = "http://localhost:8080/api";
+
+async function register() {
+  const id = document.getElementById("id").value;
+  const pw = document.getElementById("pw").value;
+  const name = document.getElementById("name").value;
+
+  const res = await fetch(`${api}/register?id=${id}&pw=${pw}`, { method: "POST" });
+  alert(await res.text());
+}
+
+async function login() {
+  const id = document.getElementById("id").value;
+  const pw = document.getElementById("pw").value;
+
+  const res = await fetch(`${api}/login?id=${encodeURIComponent(id)}&pw=${encodeURIComponent(pw)}`, { method: "POST" });
+  const text = await res.text();
+  document.getElementById("status").innerText = `✅ 로그인 중: ${id}님`;
+  alert(text);
+}
+
+async function logout() {
+  const res = await fetch(`${api}/logout`, { method: "POST" });
+  alert(await res.text());
+  document.getElementById("status").innerText = "🕊️ 상태: 로그인되지 않음";
+}
+</script>
+</body>
+</html>
