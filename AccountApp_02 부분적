@@ -1,0 +1,8 @@
+	//URL로 전달된 값(인코딩된 문자열->디코딩)다시 사람이 읽을 수 있게 풀어주는 과정(String만)
+	private static String urlDecode(String s) {
+		try {
+			return java.net.URLDecoder.decode(s, java.nio.charset.StandardCharsets.UTF_8);
+		} catch (Exception e) {
+			return s;
+		}
+	}
