@@ -16,86 +16,61 @@ public class LoginApp_03 {
 
     public static void main(String[] args) throws Exception {
 
-        HttpServer server = HttpServer.create(
-                new InetSocketAddress(________), ________
-        );
+        HttpServer server = HttpServer.create(new InetSocketAddress(________), 0);
 
-        server.createContext("____", LoginApp_03::______________);
-        server.createContext("___________", LoginApp_03::________);
-        server.createContext("____________", LoginApp_03::_______);
-        server.createContext("______________", LoginApp_03::_________);
+        server.createContext("____", LoginApp_03::serveIndex);
+        server.createContext("/api/login", LoginApp_03::login);
+        server.createContext("____________", LoginApp_03::logout);
+        server.createContext("______________", LoginApp_03::register);
 
         server.start();
         System.out.println("🚀 로그인 웹서버 실행됨: http://localhost:8080");
     }
 
-    // ---------------------------------------
     // index.html 출력
-    // ---------------------------------------
     private static void serveIndex(HttpExchange ex) throws IOException {
-        File file = new File(
-            "________________________________________________________"
-        );
-
-        String html = _______________________________________________;
-        ex.getResponseHeaders().set("Content-Type", "__________________________");
-        ex.sendResponseHeaders(____, ____________________________);
-        try (OutputStream os = ________________________________) {
-            ________________________________;
+        File file = new File("________________________________________________________");
+        String html = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+        ex.getResponseHeaders().set("Content-Type", "text/html; charset=utf-8");
+        ex.sendResponseHeaders(200, html.getBytes().length);
+        try (OutputStream os = ex.getResponseBody()) {
+            os.write(html.getBytes());
         }
     }
 
-    // ---------------------------------------
-    // 로그인 처리
-    // /api/login?id=aaa&pw=111
-    // ---------------------------------------
+    // 로그인 처리    // /api/login?id=aaa&pw=111
     private static void login(HttpExchange ex) throws IOException {
 
         String id = ___________________________;
         String pw = ___________________________;
-
         String sql = "____________________________________________________";
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, id);
+            pstmt.setString(2, pw);
+            ResultSet rs = pstmt.executeQuery();
 
-        try (
-            Connection conn = ______________________________________;
-            PreparedStatement pstmt = ______________________________
-        ) {
-
-            pstmt.setString(___, ________);
-            pstmt.setString(___, ________);
-
-            ResultSet rs = ___________________________;
-
-            if (rs.next()) {
-                // 로그인 성공
-                _________________________________;
+            if (rs.next()) {                // 로그인 성공
+                send(ex, "🎉 로그인 성공! 환영합니다, " + id + "님!");
             } else {
                 _________________________________;
             }
 
         } catch (SQLException e) {
-            _________________________________;
+            send(ex, "DB ERROR: " + e.getMessage());
         }
     }
 
-    // ---------------------------------------
     // 로그아웃 처리
-    // ---------------------------------------
     private static void logout(HttpExchange ex) throws IOException {
-
-        // 쿠키 삭제 (Max-Age=0)
-        // ________________________________________________;
-
-        _________________________________;
+          send(ex, "👋 로그아웃 완료!");
     }
 
-    // ---------------------------------------
     // 회원가입 처리
-    // ---------------------------------------
     private static void register(HttpExchange ex) throws IOException {
 
-        String id = ___________________________;
-        String pw = ___________________________;
+        String id = param(ex, "id");
+        String pw = param(ex, "pw");
 
         if (_______________________________) {
             _________________________________;
@@ -105,23 +80,21 @@ public class LoginApp_03 {
         String sql = "____________________________________________________";
 
         try (
-            Connection conn = ______________________________________;
-            PreparedStatement pstmt = ______________________________
-        ) {
+            Connection conn = DriverManager.getConnection(URL, USER, PASS);
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(___, ________);
             pstmt.setString(___, ________);
-
             _________________________________;
 
-            _________________________________;
+            send(ex, "✅ 회원가입 완료!");
 
         } catch (SQLException e) {
 
-            if (_________________________________)
-                _________________________________;
+            if (e.getMessage().contains("Duplicate"))
+                send(ex, "⚠ 이미 존재하는 아이디입니다.");
             else
-                _________________________________;
+                send(ex, "DB ERROR: " + e.getMessage());
         }
     }
 
