@@ -56,29 +56,29 @@ button:hover { background: #1e40af; }
 </div>
 
 <script>
-const api = "http://localhost:8080/api";
+const api = "http://localhost:____/api"; //서버 API 기본 주소
 
 async function register() {
   const id = document.getElementById("id").value;
   const pw = document.getElementById("pw").value;
   const name = document.getElementById("name").value;
 
-  const res = await fetch(`${api}/register?id=${id}&pw=${pw}`, { method: "POST" });
+  const res = await fetch(`${___}/register?id=${__}&pw=${__}`, { method: "____" });
   alert(await res.text());
 }
 
 async function login() {
-  const id = document.getElementById("id").value;
+  const __ = document.getElementById("id").value;
   const pw = document.getElementById("pw").value;
 
-  const res = await fetch(`${api}/login?id=${encodeURIComponent(id)}&pw=${encodeURIComponent(pw)}`, { method: "POST" });
+  const res = await fetch(`${api}/login?id=${encodeURIComponent(__)}&pw=${encodeURIComponent(__)}`, { method: "____" });
   const text = await res.text();
-  document.getElementById("status").innerText = `✅ 로그인 중: ${id}님`;
+  document.getElementById("status").innerText = `✅ 로그인 중: ${__}님`;
   alert(text);
 }
 
 async function logout() {
-  const res = await fetch(`${api}/logout`, { method: "POST" });
+  const res = await fetch(`${___}/logout`, { method: "____" });
   alert(await res.text());
   document.getElementById("status").innerText = "🕊️ 상태: 로그인되지 않음";
 }
