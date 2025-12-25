@@ -113,11 +113,10 @@ public class LoginApp_03 {
 
     // 공통 응답 출력 함수
     private static void send(HttpExchange ex, String msg) throws IOException {
-
-        ex.getResponseHeaders().set("Content-Type", "__________________________");
-        byte[] bytes = ___________________________;
+        ex.getResponseHeaders().set("Content-Type", ""text/plain; charset=utf-8"");
+        byte[] bytes = msg.getBytes(StandardCharsets.UTF_8);
         ex.sendResponseHeaders(____, ____________________);
-        _________________________________;
-        _________________________________;
+        ex.getResponseBody().write(bytes);
+        ex.getRequestBody().close();
     }
 }
