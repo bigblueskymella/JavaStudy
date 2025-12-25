@@ -98,12 +98,8 @@ public class LoginApp_03 {
         }
     }
 
-    // ---------------------------------------
-    // 공통 파라미터 추출 함수
-    // ex) "id=abc&pw=1234"
-    // ---------------------------------------
+    // 공통 파라미터 추출 함수 ex) "id=abc&pw=1234"
     private static String param(HttpExchange ex, String key) {
-
         String q = _______________________________________________;
         if (___________) return "";
 
@@ -115,9 +111,7 @@ public class LoginApp_03 {
         return "";
     }
 
-    // ---------------------------------------
     // 공통 응답 출력 함수
-    // ---------------------------------------
     private static void send(HttpExchange ex, String msg) throws IOException {
 
         ex.getResponseHeaders().set("Content-Type", "__________________________");
