@@ -21,7 +21,7 @@ public class LoginApp_03 {
         server.createContext("____", LoginApp_03::serveIndex);
         server.createContext("/api/login", LoginApp_03::login);
         server.createContext("____________", LoginApp_03::logout);
-        server.createContext("______________", LoginApp_03::register);
+        //server.createContext("______________", LoginApp_03::register);
 
         server.start();
         System.out.println("🚀 로그인 웹서버 실행됨: http://localhost:8080");
